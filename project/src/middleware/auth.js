@@ -1,50 +1,45 @@
-const jwt = require("jsonwebtoken");
-const mongoose = require("mongoose");
-const teacherModel = require("../models/teacherModel");
-const studentModel = require("../models/studentModel");
+const jwt = require('jsonwebtoken')
+const teacherModel = require("../models/teacherModel")
 
-// --------------Authentication------------
 
-const authenticate = async function (req, res, next) {
+
+//===================================Authentication======================================================
+
+
+const authentication = async function (req, res, next) {
   try {
-    let token = req.headers["x-api-key"];
-    if (!token)
-      return res.status(404).send({ status: false, msg: "missing a mandatory token" });
+      token = req.headers['x-api-key']
+      if (!token) { return res.status(400).send({ status: false, message: "Token is missing" }) }
+      decodedToken = jwt.verify(token, "tailwebs", (err, decode) => {
+          if (err) {
+              return res.status(400).send({ status: false, message: "Token is not correct!" })
+          }
+          req.decode = decode
 
-    let decodedToken = jwt.verify(token, "tailwebs", (err, decode)=>{
-      if (err){
-          return res.status(401).send({status: false, msg:"You have enter invalid token"})
-      }(decode == true)
-      next()
-    })
-  } catch (err) {
-    return res.status(500).send({ status: false, msg: err.messge }); 
+          next()
+      })
+  } catch (error) {
+      res.status(500).send({ status: false, message: error.message })
   }
-};
-
-//---------------------Authorization---------------------
-
+}
+//===================================Authorization======================================================
 const authorization = async function (req, res, next) {
   try {
-    const token = req.headers["x-api-key"]; 
-    if (!token)
-      res.status(401).send({ status: false, msg: "missing a mandatory token" });
-    let decodedToken = jwt.verify(token, "tailwebs");
-    let teacehLoggedIn = decodedToken.teacherId;
-    let student = req.params.studentId
-    if (!mongoose.isValidObjectId(student)){
-      return res.status(400).send({ status: false, msg: 'Please enter correct student Id' })
-  }
-    let studentData = await studentModel.findOne({ _id: student });
-    
-    if (studentData.studentId.toString() != teacehLoggedIn) {
-      return res.status(403).send({ status: false, msg: "You are not authrized" });
-    }
-    next();
+      let teacherId = req.params.teacherId
+
+      let Checking = await teacherModel.findOne({ _id: teacherId })
+      if (!Checking) {
+          return res.status(404).send({ status: false, message: "this teacher is not found" })
+      }
+      if (Checking.teacherId != req.decode.teacherId) {
+          return res.status(403).send({ status: false, message: "you are not Authorized person" })
+      }
+      else {
+          next()
+      }
   } catch (error) {
-    res.status(500).send({ status: false, Error: error.message });
+      return res.status(500).send({ status: false, message: error.message })
   }
-};
+}
 
-
-module.exports = { authenticate, authorization }
+module.exports = { authentication, authorization }

@@ -38,7 +38,7 @@ const teachercreate = async function (req, res) {
         if (!isValid(teacherData.password)) {
             return res.status(400).send({ status: false, message: "password is missing or you left empty" });
         }
-        if(!Number(teacherData.password)){
+        if (!Number(teacherData.password)) {
             return res.status(400).send({ status: false, message: "password is only in number" });
         }
         if (teacherData.password.length < 4 || teacherData.password.length >= 10) {
@@ -53,7 +53,7 @@ const teachercreate = async function (req, res) {
 
 //--------------------------|| LOGIN USERS ||--------------------------------
 
-const login = async function (req, res) { 
+const login = async function (req, res) {
     try {
         let { email, password } = req.body
 
