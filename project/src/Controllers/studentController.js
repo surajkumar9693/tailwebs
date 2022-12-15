@@ -64,7 +64,7 @@ const getstudent = async function (req, res) {
             return res.status(404).send({ status: false, message: "No product found" })
         }
         if (queries) {
-            if (queries.name && queries.subject) {
+            if (queries.name && queries.subject) { 
                 let combination = await studentModel.find({ name: { $regex: queries.name }, subject: { $regex: queries.subject } })
                 return combination.length == 0 ? res.status(404).send({ status: false, message: "No student found" }) : res.status(200).send({ status: true, message: "Success", data: combination })
 

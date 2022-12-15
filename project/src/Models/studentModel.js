@@ -8,11 +8,11 @@ const studentSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    subject: {
+    Subject: {
         type: String,
         required: true
     },
-    marks: {
+    Marks: {
         type: Number,
         required: true
     },
@@ -24,9 +24,9 @@ const studentSchema = new mongoose.Schema({
     teacherId: {
         type: ObjectId,
         required: true,
-        ref: 'teacher'
+        ref: 'tail-teacher'
     }
 
 }, { timestamps: true })
 
-module.exports = mongoose.model('student', studentSchema)
+module.exports = mongoose.model('tail-student', studentSchema)
